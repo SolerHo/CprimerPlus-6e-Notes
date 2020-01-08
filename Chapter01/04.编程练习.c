@@ -16,5 +16,6 @@ int main(void)
     float ceremeter; // 定义变量
     ceremeter = MID * inch; // 变量转换公式
     printf("转换后的厘米为： %.2f\n",ceremeter);
+    system(“pause”);  // 使程序结束后不马上消失，停留
     return 0;
 }
