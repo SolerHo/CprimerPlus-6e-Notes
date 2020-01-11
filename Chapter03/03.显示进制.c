@@ -1,5 +1,5 @@
 /**
- * Date : 2020 - 01 - 08
+ * Date : 2020 - 01 - 11
  * Author : Soler HO
  * 
  * Description : 根据输入，以十进制、八进制、十六进制打印十进制数
