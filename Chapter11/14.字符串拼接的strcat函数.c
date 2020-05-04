@@ -53,7 +53,7 @@ char * s_gets(char * st,int n)
     ret_val = fgets(st,n,stdin); 
     if(ret_val)
     {
-        while (st[i]!='\n'&&st[i]!='\0') // 不等于换行符和空格
+        while (st[i]!='\n'&&st[i]!='\0') // 不等于换行符和结束符号
             i++;
         if(st[i]=='\n')
             st[i]='\0';
