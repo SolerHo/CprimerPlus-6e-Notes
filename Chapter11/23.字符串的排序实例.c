@@ -3,7 +3,7 @@
  * Date : 2020 - 06 - 18
  * Author : Soler HO
  * 
- * Book : C++ Primer Plus 6 edition
+ * Book : C Primer Plus 6 edition
  * 
  * Chapter : 11
  * 
