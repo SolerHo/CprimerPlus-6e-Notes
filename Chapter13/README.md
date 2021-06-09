@@ -43,7 +43,7 @@ if(fopen==NULL){
 都声明在 `stdlib.h` 头文件中。
 
 |函数|函数原型|语法格式|功能|备注|
-|:--:|:--|:--:|:--:|:--:|
+|:--:|:--|:--|:--|:--|
 |`fopen()`|`FILE *fopen(const char *filename,const char * mode);`|`FILE *fp = fopen("filename",mode)`|打开文件|返回一个文件指针：FILE *fp 指向一个记录文件信息的数据结构<br>例：`fp = fopen("hello_c.txt","r");`|
 |`fclose()`|`int fclose(FILE * stream);`|`fclose(fp)`|关闭文件|关闭成功返回0，失败返回EOF(-1)，存储空间不足或者被移除都会出现I/O错误，都会导致失败。|
 >文件指针的类型是指向FILE的指针，FILE是一个定义在 `stdlib.h` 中的`派生类型`。
@@ -59,7 +59,7 @@ mode的内容参考：
 >需要告知 `getc()` 和 `putc()` 函数 使用哪一个文件。
 
 |函数|函数原型|语法格式|功能|备注|
-|:--:|:--|:--:|:--:|:--:|
+|:--:|:--|:--|:--|:--|
 |`gets()`|`int getc(FILE *stream)`|`ch = getc(fp)`|从fp指定文件中获取一个字符，读到文件结尾返回EOF|`getc(stdin) == getchar(ch);`|
 |`putc()`|`int putc(int char,FILE *stream)`|`putc(ch,fp)`|把ch放入fp指向文件|`puts(ch,stdout) == putchar(ch);`|
 
