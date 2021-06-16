@@ -123,7 +123,52 @@ int main(int argc, char * argv[])
 👉小区别：
 >`fprintf()` 和 `fscanf()` 函数的第一个参数`必须指定待处理的文件`。
 
-#### 3.2 
+例子：
+```cpp
+/*addaword.c --fprintf() fscanf() rewind()*/
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#define MAX 41
+ 
+int main(void)
+{
+	FILE *fp;
+	char words[MAX];
+	if ((fp = fopen("wordy", "a+")) == NULL) //更新（读写）模式打开文件，只允许在文件末尾添加内容
+	{
+		fprintf(stdout, "Can't open \"wordy\" file.\n");
+		exit(EXIT_FAILURE);
+	}
+	puts("Enter words to add to the file; press the #");
+	puts("key at the beginning of a line to terminate.");
+	while ((fscanf(stdin, "%40s", words) == 1) && (words[0] != '#'))
+		fprintf(fp, "%s\n", words);
+	puts("File contents:");
+    /** 关于 rewind() 函数的介绍说明
+     *
+     * rewind()函数 在头文件 stdio.h 中
+     * 用于将文件指针重新指向文件的开头，同时清除和文件流相关的错误和EOF标记。
+     * 相当于调用 fseek()函数
+     * 函数原型：void rewind(FILE *stream);
+     * 
+     */
+	rewind(fp);//回到文件开始处。
+	while (fscanf(fp, "%s", words) == 1)
+		puts(words);
+	puts("Done!");
+	if (fclose(fp) != 0)
+		fprintf(stderr, "Error closing file\n");
+ 
+	return 0;
+}
+```
+
+
+#### 3.2 fgets() 和 fputs()函数
+
+
 
 ### 4. 随机访问
 
