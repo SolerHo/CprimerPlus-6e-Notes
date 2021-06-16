@@ -63,8 +63,67 @@ mode的内容参考：
 |`gets()`|`int getc(FILE *stream)`|`ch = getc(fp)`|从fp指定文件中获取一个字符，读到文件结尾返回EOF|`getc(stdin) == getchar(ch);`|
 |`putc()`|`int putc(int char,FILE *stream)`|`putc(ch,fp)`|把ch放入fp指向文件|`puts(ch,stdout) == putchar(ch);`|
 
+#### 2.3 一个简单的文件压缩程序
+例子：把一个文件中选定的数据拷贝到另一个文件中。
+```cpp
+//reducto.c 把文件压缩成原来的1/3
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h> //提供exi()原型
+#include<string.h> //提供strcpy()、strcat()原型
+#define LEN 40
+int main(int argc, char * argv[])
+{
+	FILE * in, *out; //声明两个指向FILE的指针
+	int ch; 
+	char name[LEN]; //存储输出文件名
+	int count = 0;
+ 
+	if (argc < 2)//检查命令行参数
+	{
+		fprintf(stderr, "Usage: %s filename\n", argv[0]);
+		exit(EXIT_FAILURE); //表明程序失败退出
+	}
+	//设置输入，设置mode为可读
+	if ((in = fopen(argv[1], "r")) == NULL)
+	{
+		fprintf(stderr, "I couldn't open the file \"%s\"\n ", argv[1]);
+		exit(EXIT_FAILURE);
+	}
+	//设置输出
+	strncpy(name, argv[1], LEN - 5); // 拷贝文件名
+	name[LEN - 5] = '\0';
+	strcat(name, ".red");
+	if ((out = fopen(name, "w")) == NULL) //设置可写方式打开file
+	{
+		fprintf(stderr, "Can't create output file.\n");
+		exit(3);
+	}
+	//拷贝数据
+	while ( (ch=getc(in))!=EOF) //通过使用EOF来告知程序已经读取到文件结尾，从而结束程序。
+	{
+		if (count++ % 3 == 0)
+			putc(ch, out);
+	}
+	if (fclose(in) != 0 || fclose(out) != 0)
+		fprintf(stderr, "Error in closing files.\n");
+ 
+	return 0;
+}
+```
+>`fprintf()`和 `printf()` 类似，⚠️注意点：`fptrintf()` 第一个参数必须是一个`文件指针`。
 
-### 3. 文件I/O
+
+
+### 3. 文件I/O：fprintf()、fscanf()、fgets()、fputs()
+
+#### 3.1 fprintf() 和 fscanf() 函数
+`fprintf()` 和 `fscanf()`函数的工作方式与 `printf()` 和 `fscanf()`函数的类似。
+
+👉小区别：
+>`fprintf()` 和 `fscanf()` 函数的第一个参数`必须指定待处理的文件`。
+
+#### 3.2 
 
 ### 4. 随机访问
 
