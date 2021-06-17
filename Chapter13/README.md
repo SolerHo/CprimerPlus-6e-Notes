@@ -113,9 +113,20 @@ int main(int argc, char * argv[])
 ```
 >`fprintf()`和 `printf()` 类似，⚠️注意点：`fptrintf()` 第一个参数必须是一个`文件指针`。
 
+#### 2.4 标准I/O的原理
+步骤：
+- 调用`fopen()`打开文件。
+	- `fopen()`不仅打开一个文件，还创建了一个缓冲区（在读写模式下会创建两个缓冲区）以及一个包含文件和缓冲区数据的结构。
+	- fopen()返回一个指向该结构的指针，以便其他函数知道该如何找到该结构。
+	- 结构中通常包含一个指定流中当前未知的文件位置指示器。还包括错误和文件结尾的指示器、一个指向缓冲区开始处的指针，一个文件标识符和一个计数（统计实际拷贝进缓冲区的字节数）。
 
+- 调用一个定义在 `stdio.h` 中的输入函数，如`fscanf()、getc()或fgets()`。
+	- 调用函数时，文件中的数据块会被拷贝到缓冲区中，最初调用函数，除了填充缓冲区外，还要设置指针变量所指向的结构中的值。
+	- 在初始化结构和缓冲区后，输入函数按要求从缓冲区中读取数据，在读取数据时，文件位置指示器被设置为指向刚读取字符的下一个字符。
+	- 当输入函数发现已读完缓冲区中的所有字符时，会请求把下一个缓冲大小的数据块从文件拷贝到该缓冲区中。
+	- 输出函数以类似的方式把数据写入缓冲区。当缓冲区被填满时，数据将被拷贝至文件中。
 
-### 3. 文件I/O：fprintf()、fscanf()、fgets()、fputs()
+### 3. 文件I/O：`fprintf()、fscanf()、fgets()、fputs()`
 
 #### 3.1 `fprintf()` 和 `fscanf()` 函数
 `fprintf()` 和 `fscanf()`函数的工作方式与 `printf()` 和 `fscanf()`函数的类似。
@@ -250,7 +261,7 @@ C模型无法做到与Unix模型一致，因为历史上C就是因为Unix而生�
 >|`fseek(file,ftell-pos,SEEK_SET)`|到距文件开始处ftell-pos的位置，ftell-pos是ftell()的返回值|
 
 #### 4.4 `fgetpos()` 和 `fsetpos()` 函数
-fgetpos() 函数
+- fgetpos() 函数
 
 语法格式：
 ```cpp
@@ -264,15 +275,30 @@ int fgetpos( FILE *stream, fpos_t *position );
 >
 > **position** ： 指向 fpos_t 对象的指针
 >
-> **功能**：处理较大文件新增函数，解决 `fseek()` 和 `ftell()`函数存在的问题。
+> **功能**：处理较大文件（字节数超过long范围），解决 `fseek()` 和 `ftell()`函数存在的问题。
 >
 > **返回值**：执行成功时返回0，否则返回非0值。
 ANSI C定义了如何使用 `fpos_t` 类型，`fgetpos()` 函数的原型如下：
 ```cpp
 int fgetpos(FILE * restrict stream,fpos_t * restrict pos);
 ```
+- `fsetpos()` 函数
+
+语法格式：
+```cpp
+int fsetpos(FILE *stream,const fpost_t *pos);
+```
+>调用函数时，使用pos指向位置上的 `fpos_t` 类型值来设置文件指针指向该值指定的位置。
+>
+>函数成功返回0，失败则返回非0。
 
 
 ### 5. 其他I/O函数
+>一般都是成功返回0，不成功返回非零值：EOF（-1）
 
+|函数|函数原型|功能|
+|:--|:--|:--|
+|`ungetc()`|`int ungetc(int c, FILE* fp)`|把c指定的字符放回输入流中，如果把一个字符放回输入流，下次调用标准输入函数时将读取该字符。|
+|`fflush()`|`int fflush(FILE *stream)`|调用函数引起输出缓冲区中所有的未写入数据被发送到stream指定的输出文件，该过程叫作 **刷新缓冲区**。<br>如果指针stream是空指针，所有输出缓冲区都被刷新。|
+|`setvbuf()`|`int setvbuf(FILE* fp, char * buf, int mode, size_t size);`|创建一个提供I/O函数替换使用的缓冲区。||||
 
