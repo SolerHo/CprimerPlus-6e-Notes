@@ -237,6 +237,40 @@ file.txt的总大小为 = 23 字节
 	- MS-DOS用 `\r\n` 组合表示文件换行符。
 	>以`文本模式`打开相同的文件，C程序把`\r\n`看成`\n`，但是，以二进制模式打开该文件时，程序能看见这两个字符。
 #### 4.3 可移植性
+C模型无法做到与Unix模型一致，因为历史上C就是因为Unix而生，但是其他系统不能保证与Unix模型一致。因此，ANSI对这些函数降低了要求，下面是一些限制：
+
+- 在`二进制模式`中，实现不必支持`SEEK_END模式`。
+- 在`文本模式`中，只有以下调用能保证其相应的行为。
+
+>|函数调用|效果|
+>|:--|:--|
+>|`fseek(file,0L,SEEK_SET)`|定位至文件开始处|
+>|`fseek(file,0L,SEEK_CUR)`|保持当前位置不动|
+>|`fseek(file,0L,SEEK_END)`|定位至文件结尾|
+>|`fseek(file,ftell-pos,SEEK_SET)`|到距文件开始处ftell-pos的位置，ftell-pos是ftell()的返回值|
+
+#### 4.4 `fgetpos()` 和 `fsetpos()` 函数
+fgetpos() 函数
+
+语法格式：
+```cpp
+int fgetpos( FILE *stream, fpos_t *position );
+```
+>参数说明：
+>
+> **stream** : 当前文件流的指针
+>
+> **fpos_t** : 用来表示文件读写指针位置的类型，用来指明正在操作的文件中读或写的位置，文件头处为0。fpos_t在不同的平台下有不同的类型。
+>
+> **position** ： 指向 fpos_t 对象的指针
+>
+> **功能**：处理较大文件新增函数，解决 `fseek()` 和 `ftell()`函数存在的问题。
+>
+> **返回值**：执行成功时返回0，否则返回非0值。
+ANSI C定义了如何使用 `fpos_t` 类型，`fgetpos()` 函数的原型如下：
+```cpp
+int fgetpos(FILE * restrict stream,fpos_t * restrict pos);
+```
 
 
 ### 5. 其他I/O函数
