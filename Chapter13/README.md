@@ -175,8 +175,68 @@ int main(void)
 
 |函数名|函数原型|功能|参数|返回值|
 |:--|:--|:--|:--|:--|
-|`fseek()`|`int fseek(FILE *stream, long int offset, int whence);`|重定位流上的文件指针|第一个参数stream为`文件指针`<br>第二个参数offset为`偏移量`，整数表示正向偏移，负数表示负向偏移<br>第三个参数模式，确定文件起始点,可能取值为：SEEK_SET（文件开头）、 SEEK_CUR（当前位置） 或 SEEK_END（文件末尾）|||
-|||||||||||||||
+|`fseek()`|`int fseek(FILE *stream, long int offset, int whence);`|重定位流上的文件指针|第一个参数stream为`文件指针`<br>第二个参数offset为`偏移量`，正数表示正向偏移，负数表示负向偏移<br>第三个参数是`模式`，确定文件起始点,几种明示常量为：`SEEK_SET（文件开头）、 SEEK_CUR（当前位置） 或 SEEK_END（文件末尾）`|如果成功，则该函数返回零，否则返回非零值。|
+|`ftell`|`long ftell(FILE *stream);`|得到文件位置指针当前位置相对于文件首的偏移字节数。|`FILE *stream`返回指针的文件流|成功----返回当前文件指针的位置<br>出错----返回-1L，是长整数的-1值。|
+
+`fseek`例子：
+```cpp
+fseek(fp,0L,SEEK_SET); //定位至文件开始处
+fseek(fp,10L,SEEK_SET); //定位至文件中的第10个字节
+fseek(fp,2L,SEEK_CUR); //从文件当前位置前移2个字节
+fseek(fp,0L,SEEK_END); // 定位至文件结尾
+fseek(fp,-10L,SEEK_END); // 从文件结尾处回退10个
+```
+
+`ftell`例子：
+```cpp
+#include<stdio.h>
+
+int main()
+{
+	FILE *stream;
+	int len;
+
+	stream = fopen("file.txt","r"); // 只读方式打开
+	if(stream == NULL)
+	{
+		perror("打开文件错误");
+		return(-1);
+	}
+	fseek(stream,0,SEEK_END);
+	len = ftell(stream); //返回类型为long，把file.txt文件开始处到文件结尾的字节数赋给len
+	fclose(stream);
+
+	printf("file.txt的总大小为 = %d 字节\n",len);
+
+	return(0);
+}
+```
+假设文件file.txt中的内容为
+```txt
+www.github.com/solerho
+```
+使用gcc运行程序后结果如下：
+```shell
+[root@centos8 examples]# gcc ftell.c 
+[root@centos8 examples]# ls
+a.out  file.txt  ftell.c
+[root@centos8 examples]# ./a.out 
+file.txt的总大小为 = 23 字节
+```
+
+#### 4.2 二进制模式和文本模式
+不同之处：
+- UNIX
+	- UNIX只有一种文件格式，所以不需要进行特殊的转换。
+	- UNIX使用 `\n` 表示换行符。
+	>以文本模式打开时，C能识别Ctrl-Z作为文件结尾标记的字符。
+	>
+	>以二进制模式打开相同的文件时，Ctrl-Z字符被看作是文件中的一个字符，而实际的文件结尾符在该字符后面。
+- MS-DOS
+	- MS-DOS编译器都用 Ctrl + Z 标记文件。
+	- MS-DOS用 `\r\n` 组合表示文件换行符。
+	>以文本模式打开相同的文件，C程序把`\r\n`看成`\n`，但是，以二进制模式打开该文件时，程序能看见这两个字符。
+#### 4.3 可移植性
 
 
 ### 5. 其他I/O函数
