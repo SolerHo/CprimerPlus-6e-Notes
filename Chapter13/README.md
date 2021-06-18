@@ -292,13 +292,150 @@ int fsetpos(FILE *stream,const fpost_t *pos);
 >
 >函数成功返回0，失败则返回非0。
 
+### 5. 二进制I/O：`fread()` 和 `fwrite()` 
 
-### 5. 其他I/O函数
+如果以程序所用的表示法把数据储存在文件中。则称以`二进制形式存储数据`。
+
+不存在从`数值形式`到`字符串`的转换过程。对于标准I/O，`fread()` 和 `fwrite()` 函数用于以二进制形式处理数据。
+
+所有的数据都是以 二进制形式存储。
+
+ANSI C 和许多OS都识别两种文件格式：`二进制` 和 `文本`。
+
+### 6. 其他I/O函数
 >一般都是成功返回0，不成功返回非零值：EOF（-1）
 
 |函数|函数原型|功能|
 |:--|:--|:--|
 |`ungetc()`|`int ungetc(int c, FILE* fp)`|把c指定的字符放回输入流中，如果把一个字符放回输入流，下次调用标准输入函数时将读取该字符。|
-|`fflush()`|`int fflush(FILE *stream)`|调用函数引起输出缓冲区中所有的未写入数据被发送到stream指定的输出文件，该过程叫作 **刷新缓冲区**。<br>如果指针stream是空指针，所有输出缓冲区都被刷新。|
-|`setvbuf()`|`int setvbuf(FILE* fp, char * buf, int mode, size_t size);`|创建一个提供I/O函数替换使用的缓冲区。||||
+|`fflush()`|`int fflush(FILE *stream)`|调用函数引起输出缓冲区中所有的未写入数据被发送到stream指定的输出文件，该过程叫作 **`刷新缓冲区`**。<br>如果指针stream是空指针，所有输出缓冲区都被刷新。|
+|`setvbuf()`|`int setvbuf(FILE* fp, char * buf, int mode, size_t size);`|创建一个提供I/O函数替换使用的缓冲区。|
+
+#### `size_t fwrite()` 函数
+`fwrite()` 函数的原型：
+```cpp
+size_t fwrite(const void * restrict ptr,size_t size,size_t nmemb,FILE * restrict stream);
+```
+> `指针ptr` ：待写入数据块的地址。
+> 
+> `size`：待写入数据块的大小（以字节为单位）。
+> 
+> `nmemb` ：待写入数据块的数量。
+> 
+> `stream` ：指定待写入的文件。
+`fwrite()` 函数返回成功写入项的数量。
+
+#### `size_t fread()` 函数
+`fread()` 函数的原型：
+```cpp
+size_t fread(void * restrict ptr,,size_t size,size_t nmemb,FILE * restrict stream);
+```
+> 在 `fread()` 函数中，`ptr` 是待读取文件数据在内存中的地址。`stream` 指定待读取的文件。
+>
+> fread() 函数返回成功读取项的数量。
+
+#### `int feof(FILE *fp)` 和 `int ferror(FILE *fp)` 函数
+如果标准输入函数EOF，则通常表明函数已到达文件结尾。
+> `feof()` 函数返回一个非零值，否则返回0。
+>
+> `ferror()` 函数返回一个非零值，否则返回0。
+
+```cpp
+/* append.c -- 把文件附加到另一个文件末尾 */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define BUFSIZE 4096
+#define SLEN 81
+void append(FILE *source, FILE *dest);
+char * s_gets(char * st, int n);
+int main(void)
+{
+   FILE *fa, *fs;     // fa 指向目标文件，fs 指向源文件
+   int files = 0;     // 附加的文件数量
+   char file_app[SLEN];  // 目标文件名
+   char file_src[SLEN];  // 源文件名
+   int ch;
+   puts("Enter name of destination file:");
+   s_gets(file_app, SLEN);
+   if ((fa = fopen(file_app, "a+")) == NULL)
+   {
+     fprintf(stderr, "Can't open %s\n", file_app);
+     exit(EXIT_FAILURE);
+   }
+   if (setvbuf(fa, NULL, _IOFBF, BUFSIZE) != 0)
+   {
+     fputs("Can't create output buffer\n", stderr);
+     exit(EXIT_FAILURE);
+   }
+   puts("Enter name of first source file (empty line to quit):");
+   while (s_gets(file_src, SLEN) && file_src[0] != '\0')
+   {
+     if (strcmp(file_src, file_app) == 0)
+        fputs("Can't append file to itself\n", stderr);
+     else if ((fs = fopen(file_src, "r")) == NULL)
+        fprintf(stderr, "Can't open %s\n", file_src);
+     else
+     {
+        if (setvbuf(fs, NULL, _IOFBF, BUFSIZE) != 0)
+        {
+          fputs("Can't create input buffer\n", stderr);
+          continue;
+        }
+        append(fs, fa);
+        if (ferror(fs) != 0)
+          fprintf(stderr, "Error in reading file %s.\n",
+               file_src);
+        if (ferror(fa) != 0)
+          fprintf(stderr, "Error in writing file %s.\n",
+               file_app);
+        fclose(fs);
+        files++;
+        printf("File %s appended.\n", file_src);
+        puts("Next file (empty line to quit):");
+     }
+   }
+   printf("Done appending. %d files appended.\n", files);
+   rewind(fa);
+   printf("%s contents:\n", file_app);
+   while ((ch = getc(fa)) != EOF)
+     putchar(ch);
+   puts("Done displaying.");
+   fclose(fa);
+   return 0;
+}
+
+void append(FILE *source, FILE *dest)
+{
+   size_t bytes;
+   static char temp[BUFSIZE];  // 只分配一次
+   while ((bytes = fread(temp, sizeof(char), BUFSIZE, source)) > 0)
+     fwrite(temp, sizeof(char), bytes, dest);
+}
+
+char * s_gets(char * st, int n)
+{
+   char * ret_val;
+   char * find;
+   ret_val = fgets(st, n, stdin);
+   if (ret_val)
+   {
+     find = strchr(st, '\n');   // 查找换行符
+     if (find)          // 如果地址不是NULL，
+        *find = '\0';      // 在此处放置一个空字符
+     else
+        while (getchar() != '\n')
+          continue;
+   }
+   return ret_val;
+}
+```
+
+
+
+
+
+
+
+
 
