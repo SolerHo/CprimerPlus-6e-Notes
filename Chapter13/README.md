@@ -395,6 +395,7 @@ int main(void)
         puts("Next file (empty line to quit):");
      }
    }
+   
    printf("Done appending. %d files appended.\n", files);
    rewind(fa);
    printf("%s contents:\n", file_app);
