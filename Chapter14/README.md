@@ -247,6 +247,43 @@ double sum(double x, double y)
 #### 6.2 传递结构的地址
 必须使用`&运算符`来获取`结构的地址`，结构名只是其地址的别名。
 
+```cpp
+#include<stdio.h>
+#define FUNDLEN 50
+ 
+struct funds {
+	char bank[FUNDLEN];
+	double bankfund;
+	char save[FUNDLEN];
+	double savefund;
+};
+ 
+double sum(const struct funds *); //
+ 
+int main(void)
+{
+	struct funds stan = {
+		"Garlic--Melon Bank",
+		4032.27,
+		"Lucky's Savings and Loan",
+		8543.94
+	};
+ 
+	printf("Stan has a total of $%.2f.\n", sum(&stan)); //
+	return 0;
+}
+double sum(const struct funds * money) //
+{
+	return (money->bankfund + money->savefund);
+}
+```
+#### 6.3 传递结构
+把结构作为参数的编译器。
+
+
+
+
+
 
 
 
