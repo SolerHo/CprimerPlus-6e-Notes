@@ -432,4 +432,58 @@ char * s_gets(char * st, int n)
    return ret_val;
 }
 ```
+### 7. 用二进制I/O进行随机访问
+```cpp
+/* randbin.c -- 用二进制I/O进行随机访问 */
+#include <stdio.h>
+#include <stdlib.h>
+#define ARSIZE 1000
+int main()
+{
+   double numbers[ARSIZE];
+   double value;
+   const char * file = "numbers.dat";
+   int i;
+   long pos;
+   FILE *iofile;
+   // 创建一组 double类型的值
+   for (i = 0; i < ARSIZE; i++)
+     numbers[i] = 100.0 * i + 1.0 / (i + 1);
+   // 尝试打开文件
+   if ((iofile = fopen(file, "wb")) == NULL)
+   {
+     fprintf(stderr, "Could not open %s for output.\n", file);
+     exit(EXIT_FAILURE);
+   }
+   // 以二进制格式把数组写入文件
+   fwrite(numbers, sizeof(double), ARSIZE, iofile);
+   fclose(iofile);
+   if ((iofile = fopen(file, "rb")) == NULL)
+   {
+     fprintf(stderr,
+        "Could not open %s for random access.\n", file);
+     exit(EXIT_FAILURE);
+   }
+   // 从文件中读取选定的内容
+   printf("Enter an index in the range 0-%d.\n", ARSIZE - 1);
+   while (scanf("%d", &i) == 1 && i >= 0 && i < ARSIZE)
+   {
+     pos = (long) i * sizeof(double);  // 计算偏移量
+     fseek(iofile, pos, SEEK_SET);    // 定位到此处
+     fread(&value, sizeof(double), 1, iofile); //读取该位置上的数据值
+     printf("The value there is %f.\n", value);
+     printf("Next index (out of range to quit):\n");
+   }
+   // 完成
+   fclose(iofile);
+   puts("Bye!");
+   return 0;
+}
+```
 
+### 总结
+输入函数`getc()`、`fgets()`、`fscanf()`和`fread()` 都是从`文件开始处按顺序`读取文件。
+
+`fseek()` 和 `ftell()` 函数让程序可以`随机访问文件中的任意位置`。`fgetpos()` 和 `fsetpos()` 把类似的功能扩展到更大的文件。
+
+与文本模式相比，二进制模式更容易进行随机访问。
