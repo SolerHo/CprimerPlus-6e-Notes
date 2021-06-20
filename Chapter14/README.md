@@ -279,12 +279,252 @@ double sum(const struct funds * money) //
 ```
 #### 6.3 传递结构
 把结构作为参数的编译器。
+```cpp
+#include<stdio.h>
+#define FUNDLEN 50
+ 
+struct funds {
+	char bank[FUNDLEN];
+	double bankfund;
+	char save[FUNDLEN];
+	double savefund;
+};
+ 
+double sum( struct funds moolah);
+ 
+int main(void)
+{
+	struct funds stan = {
+		"Garlic--Melon Bank",
+		4032.27,
+		"Lucky's Savings and Loan",
+		8543.94
+	};
+ 
+	printf("Stan has a total of $%.2f.\n", sum(stan));
+	return 0;
+}
+/*编译器会为funds结构创建一个名为moolah的自动结构变量副本，然后对副本进行操作（不会改变实际参数stan）*/
+double sum( struct funds moolah)
+{
+	/*类似给结构起个别名，然后通过别名来对其进行访问*/
+	return( moolah.bankfund + moolah.savefund);
+}
+```
+
+#### 6.4 其他结构特性
+
+- 新标准的C允许把一个结构赋值给另一个结构，但数组不行。即使成员是数组，也能完成赋值。
+
+- 现在的C（包括ANSI C），函数不仅能把结构本身作为参数传递，还能把结构作为返回值返回。
+	> 把结构作为函数参数可以把结构的信息传送给函数，把结构作为返回值的函数能把结构的信息从被调函数传回给主调函数。
+
+👉**小Tips**：结构指针允许双向通信。
+
+**方法1:使用指针方式 ————> 传递地址**
+```cpp
+#include<stdio.h>
+#include<string.h>
+
+#define NLEN 30
+struct namect{
+	char fname[NLEN];
+	char lname[NLEN];
+	int letters;
+};
+void getinfo(struct namect *);
+void makeinfo(struct namect *);
+void showinfo(const struct namect *);
+char s_gets(char *st,int n);
+
+int main(void)
+{
+	struct namect person;
+
+	getinfo(&persion);
+	makeinfo(&person);
+	showinfo(&person);
+	return 0;
+}
+void getinfo(struct namect *pst)
+{
+	printf("please enter your first name.\n");
+	s_gets(pst->fname,NLEN);
+	printf("please enter your last name.\n");
+	s_gets(pst->lname,NLEN);
+}
+
+void makeinfo(struct namect *pst)
+{
+	pst->letters = strlen(pst->fname) + strlen(pst->lname);
+}
+
+void showinfo(const struct namect *pst)
+{
+	printf("%s %s , your name contains %d letters.\n",
+			pst->fname,pst->lname,pst->letters);
+}
+
+char s_gets(char *st,int n)
+{
+	char *ret_val;
+	char *find;
+
+	ret_val = fgets(st,n,stdin);
+	if(ret_val)
+	{
+		find = strchr(st,'\n');//查找换行符
+		if(find) // 如果地址不是NULL
+			*find = '\0'; // 放置一个空字符
+		else
+			while(getchar() !='\n')
+			 continue; // 处理输入行的剩余字符
+	}
+	return ret_val;
+}
+```
+**方法2：使用结构 ————> 传递结构**
+```cpp
+#include<stdio.h>
+#include<string.h>
+
+#define NLEN 30
+struct namect{
+	char fname[NLEN];
+	char lname[NLEN];
+	int letters;
+};
+
+struct namect getinfo(void);
+struct namect makeinfo(struct namect);
+void showinfo(const struct namect *);
+char s_gets(char *st,int n);
+
+int main(void)
+{
+	struct namect person;
+
+	person = getinfo();
+	person = makeinfo(person);
+	showinfo(person);
+	return 0;
+}
+void getinfo(void)
+{
+	struct namect temp;
+	printf("please enter your first name.\n");
+	s_gets(temp.fname,NLEN);
+	printf("please enter your last name.\n");
+	s_gets(temp.lname,NLEN);
+
+	return temp;
+}
+
+void makeinfo(struct namect *pst)
+{
+	pst->letters = strlen(pst->fname) + strlen(pst->lname);
+}
+
+void showinfo(struct namect info)
+{
+	printf("%s %s , your name contains %d letters.\n",
+			info.fname,info.lname,info.letters);
+}
+
+char s_gets(char *st,int n)
+{
+	char *ret_val;
+	char *find;
+
+	ret_val = fgets(st,n,stdin);
+	if(ret_val)
+	{
+		find = strchr(st,'\n');//查找换行符
+		if(find) // 如果地址不是NULL
+			*find = '\0'; // 放置一个空字符
+		else
+			while(getchar() !='\n')
+			 continue; // 处理输入行的剩余字符
+	}
+	return ret_val;
+}
+```
+>该方式中makeinfo()函数返回的是一个结构。
+
+对于指针方式传递还是结构方式传递，两者输出结果相同，使用方式不同而已。
+
+#### 6.5 结构和结构指针的选择
+- **指针作为参数传递**
+	- **优点**：无论是以前还是现在的C实现都能使用该方法，而且执行快，只需要`传递一个地址`。
+	- **缺点**：无法保护数据，故ANSI C新增`const限定符`可以解决这个问题。
+- **结构作为参数传递**
+	- **优点**：函数处理的是原始数据的副本，这可以保护原始数据。代码风格也很清楚。
+	- **缺点**：较老版本的实现可能无法处理，且传递结构浪费时间和存储空间。 
+
+👉**小Tips**：
+- 程序员为了追求效率会使用`结构指针`作为函数参数，如需`防止原始数据被意外修改`，使用 `const限定符`。
+
+- 按`值传递结构`是处理小型结构最常用的方法。
+
+#### 6.6 结构中的字符数组和字符指针
+如果要用结构储存字符串，用字符数组作为成员比较简单。用指向char的指针也行，但是误用会导致严重的问题。（指针最好只用来在程序中管理那些已分配和在别处分配的字符串）
+
+#### 6.7 结构、指针和`malloc()`
+如果使用 `malloc()` 分配内存并使用指针存储该地址，那么在结构中使用指针处理字符串会比较合理。
+
+优点：可以请求`malloc()`为字符串`分配合适的存储空间`。
+
+⚠️注意：成对使用`malloc()`和`free()`(两个函数原型都在 `stdlib.h` 头文件中)。
+
+#### 6.8 复合字面量和结构（C99）
+C99中的复合字面量特性可用于结构和数组。如果只需要一个临时结构值，推荐使用复合字面量。
+>可以使用复合字面量创建一个数组作为函数的参数或赋给另一个结构。
+
+**语法**：把`类型名`放在`圆括号`中，后紧跟一个`花括号`括起来的`初始化列表`。如：
+```cpp
+(struct book){"The Idiot","Fyodor Destroyevsky",6.99}
+```
+
+
+**关于复合字面量总结**：
+- 在所有`函数的外部`，具有`静态存储器`。
+- 在`块中`，则具有`自动存储期`。
+- 复合字面量和普通初始化列表的语法规则相同。
 
 
 
+#### 6.9 伸缩型数组成员（C99）
+`声明伸缩型数组成员`会具有的特性：
+- 数组不会立即存在。
+- 可以编写合适的代码。
+
+**声明的规则**：
+- 必须是结构的最后一个成员。
+- 结构中必须至少有一个成员。
+- 类似普通数组，只是方括号中是空的。
+
+例如：
+```cpp
+struct flex
+{
+	int count;
+	double average;
+	double scores[]; // 伸缩型数组成员
+};
+```
+
+**特殊要求**
+- ~~不能用结构进行赋值或拷贝~~。
+- ~~不要以按值方式把结构传递给结构。~~**原因**：按值传递参数与赋值类似，把结构的地址传递给函数。
+- ~~不要使用带伸缩型数组成员的结构作为数组成员或另一个结构的成员。~~
 
 
+#### 6.10 匿名结构（C11）
+匿名结构 ~~`没有名称`~~ 的结构成员。
 
+匿名特性在嵌套联合中更加有用。
+
+#### 6.11 使用结构数组的函数
 
 
 
