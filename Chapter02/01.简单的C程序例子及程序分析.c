@@ -14,8 +14,6 @@ int main(void) /*一个简单的C程序*/
 /** main()函数
  * C程序一定要从main()函数开始执行，除了main()函数，可以任意命名其他函数。圆括号是用于识别main()是一个函数。
  */
-
-
 {
 /** 花括号、函数题和块
  * {
@@ -25,17 +23,16 @@ int main(void) /*一个简单的C程序*/
  * 所有的C函数都使用花括号标记函数体的开始和结束。
  * 不能省略
  */
-
     int num; 
     /**声明一个名为num的变量，int是C语言的一个关键字（keyword），表示一种基本的C语言数据类型，
      * num是一个标识符（identifier），也就是一个变量、函数或其他实体的名称。
      * 
-     * /
+     */
     num = 7; /*为num赋一个值*/
 
     printf("I'm a simple "); /*使用printf()函数*/
     printf("Computer .\n");
     printf("My favorite number is %d . \n",num);
-    return 0;
-}
+    return 0; 
+} //结束
 
