@@ -32,7 +32,7 @@ int main(void) /*一个简单的C程序*/
 
     printf("I'm a simple "); /*使用printf()函数*/
     printf("Computer .\n");
-    printf("My favorite number is %d . \n",num);
+    printf("My favorite number is %d . \n",num); /*换行符是一个转义序列，转义序列用于代码难以表示或无法输入的字符，如 \t 代表 Tab键*/
     return 0; 
 } //结束
 
