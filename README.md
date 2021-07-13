@@ -5,6 +5,7 @@
 - ***IDE***：` Visual Studio Code` ————> remote development ssh连接云服务器开发
 - ***编译器***：`gcc（8.3.1 20191121 (Red Hat 8.3.1-5)）`
 
+gcc细节请移步 👉 【[gcc docs](https://gcc.gnu.org/onlinedocs/8.3.0/)】
 
 |章（Chapter）|标题（Title）|笔记（Notes）|复习题（Review）|编程练习题（Practice）|
 |:--:|:--:|:--:|:--:|:--:|
