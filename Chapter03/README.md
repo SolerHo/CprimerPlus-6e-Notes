@@ -128,7 +128,7 @@ long long _Imaginary
 > 6. ⚠️注意合理选择合适的类型（编译器类型检查时，会导致部分不匹配的数据丢失）。
 
 #### 3.7 求类型大小的例子
-```c
+```
 #include<stdio.h>
 
 int main(void)
