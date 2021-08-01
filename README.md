@@ -8,6 +8,10 @@
 gcc细节请移步 👉 【[gcc docs](https://gcc.gnu.org/onlinedocs/8.3.0/)】
 
 > **笔记内容点击 `「」`中的 📖 即可。**
+>
+> ✅ --- 已完成 
+> 
+> ⬜ --- 未完成或进行中 
 
 |章（Chapter）|标题（Title）|笔记（Notes）|复习题（Review）|编程练习题（Practice）|
 |:--:|:--:|:--:|:--:|:--:|
