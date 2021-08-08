@@ -28,8 +28,7 @@ int main(void)
                 count++;
                 break;
             case '!':
-                putchar('!');
-                putchar('!');
+                putchar('!!');
                 count++;
                 break;
             default:

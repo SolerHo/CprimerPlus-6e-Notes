@@ -10,8 +10,6 @@
  * 
  */
 #include<stdio.h>
-#define STOP '#'
-
 int main(void)
 {
     char ch;
@@ -20,7 +18,7 @@ int main(void)
 
     printf("请输入一些内容（输入#停止）：\n");
 
-    while((ch = getchar()) !=STOP)
+    while((ch = getchar()) !='#')
     {
         if(ch=='e'){
             first_char = ch; // 先让程序记住一个
@@ -31,6 +29,5 @@ int main(void)
         }
     }
     printf("内容中ei出现的次数是：%d \n",count);
-
     return 0;
 }
