@@ -18,12 +18,12 @@ gcc细节请移步 👉 【[gcc docs](https://gcc.gnu.org/onlinedocs/8.3.0/)】
 
 ```sh
 # 标准格式
-test_chapter08_all.sh C文件名
+test_all_example.sh C文件名
 
 # 示例1 ----- C文件和脚本在同级目录
-test_chapter08_all.sh ch08_p1.c
+test_all_example.sh ch08_p1.c
 # 示例2 ----- C文件和脚本不在同级目录
-test_chapter08_all.sh Chapter07/codes/练习题01.c
+test_all_example.sh Chapter07/codes/练习题01.c
 ```
 
 > **笔记内容点击 `「」`中的 📖 即可。**
